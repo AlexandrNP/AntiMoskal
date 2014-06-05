@@ -17,6 +17,12 @@
             <map>
             </map>
         </property>
+        
+        <property name="replicas">
+            <map>
+                <entry key="localhost" value="27018"/>
+            </map>
+        </property>
 </bean>
 
 <bean id="driverManager" class="dao.DriverManagerDAOJDBCFactory" lazy-init="true">

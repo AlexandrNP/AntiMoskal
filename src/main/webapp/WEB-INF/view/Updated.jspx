@@ -6,7 +6,7 @@
     <jsp:element name="text">
         <jsp:attribute name="lang">EN</jsp:attribute>
         <jsp:body>Updated!</jsp:body>
-        <a href = "/"> Back </a> 
+        <a href = "/antimoskal"> Back </a> 
         <br/>
                 
     </jsp:element>

@@ -33,13 +33,13 @@
            		<tr>
            		<td></td>
         		<td>
-                <input type="submit" formaction="/pages/updateproduct" name="action" value="Save changes" />
+                <input type="submit" formaction="/antimoskal/pages/updateproduct" name="action" value="Save changes" />
                 </td>
            	 	</tr>
            	 	<tr>
            	 	<td></td>
         		<td>
-                <input type="submit" formaction="/pages/deleteproduct" name="action" value="Delete product" />
+                <input type="submit" formaction="/antimoskal/pages/deleteproduct" name="action" value="Delete product" />
                 </td>
            	 	</tr>
                 </table>
@@ -47,7 +47,7 @@
              
             <br/>            
         
-        <a href = "/"> Back </a> 
+        <a href = "/antimoskal"> Back </a> 
         <jsp:include page="/WEB-INF/jspf/Footer.jspf" />
     </jsp:element>
 

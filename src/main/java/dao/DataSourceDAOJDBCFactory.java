@@ -7,7 +7,10 @@ package dao;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.ReadPreference;
+import com.mongodb.ServerAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,6 +23,15 @@ public class DataSourceDAOJDBCFactory extends DAOFactory {
 	private String user;
 	private String password;
         private Map<String, String> shards;
+        private Map<String, Integer> replicas;
+
+    public void setReplicas(Map<String, Integer> replicas) {
+        this.replicas = replicas;
+    }
+
+    public Map<String, Integer> getReplicas() {
+        return replicas;
+    }
 
     public Map<String, String> getShards() {
         return shards;
@@ -53,7 +65,13 @@ public class DataSourceDAOJDBCFactory extends DAOFactory {
     @Override
     public DB getConnection() {
         try {
-            mongo = new MongoClient(serverName, portNumber);
+            List addrs = new ArrayList();
+            addrs.add( new ServerAddress( serverName , portNumber ) );
+            for(String replica : replicas.keySet()) {
+                addrs.add( new ServerAddress( replica , replicas.get(replica) ) );
+            }
+            
+            mongo = new MongoClient(addrs);
         } catch (UnknownHostException ex) {
             Logger.getLogger(DataSourceDAOJDBCFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -61,6 +79,7 @@ public class DataSourceDAOJDBCFactory extends DAOFactory {
         
         if(mongo!=null) {
             ds = mongo.getDB(databaseName);
+            ds.setReadPreference(ReadPreference.primaryPreferred());
             for(String shardName : shards.keySet()) {
                 ds.command(new BasicDBObject("addShard", (shardName+":"+shards.get(shardName))));
             }

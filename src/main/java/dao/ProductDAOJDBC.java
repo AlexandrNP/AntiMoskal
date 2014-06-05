@@ -74,7 +74,7 @@ public class ProductDAOJDBC implements ProductDAO {
             
               
         
-            
+            //coll.find
             doc = coll.findOne(whereQuery);
             
                  System.out.println();
