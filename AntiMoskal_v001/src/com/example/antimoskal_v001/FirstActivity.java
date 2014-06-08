@@ -2,10 +2,12 @@ package com.example.antimoskal_v001;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.ProgressBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.widget.ImageView;
 import android.app.AlertDialog;
 import android.view.View;
 
@@ -26,18 +28,27 @@ public class FirstActivity extends Activity {
 	        setContentView(R.layout.activity_first);
 	        spinner = (ProgressBar) findViewById(R.id.prgrBar);
 	        spinner.setVisibility(View.VISIBLE);
-	        
+
 	        // creating connection detector class instance
 	        cd = new ConnectionDetector(getApplicationContext());
 	        // get Internet status
 	        isInternetPresent = cd.isConnectingToInternet();
 	        // check for Internet status
-	        spinner.setVisibility(View.GONE);
+
 	        if (isInternetPresent) {
+
+	        	Thread t = new Thread(){
+					public void run(){
+						try{
+						Thread.sleep(2000);
+						mHandler.post(mUpdateResults);
+						}catch(Exception e) {}
+					}
+				}; t.start();
 	        	// Internet Connection is Present
 	            // make HTTP requests
-	            Intent i = new Intent(getApplicationContext(),MainActivity.class);
-	            startActivity(i);
+	        //    Intent i = new Intent(getApplicationContext(),MainActivity.class);
+	         //   startActivity(i);
 	        } 
 	        else {
 	            // Internet connection is not present
@@ -46,10 +57,19 @@ public class FirstActivity extends Activity {
 	            "You don't have internet connection.", false);
 	        }
 	      }
-	 
-	 
-	 
-	   		
+	    final Handler mHandler = new Handler();
+
+	    // Create runnable for posting
+	    final Runnable mUpdateResults = new Runnable() {
+	        public void run() {
+	        		spinner.setVisibility(View.GONE);
+	        		Intent i = new Intent(getApplicationContext(),MainActivity.class);
+	        		i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+	   	            startActivity(i);
+	        }
+	    };
+				
+
 		
     
 

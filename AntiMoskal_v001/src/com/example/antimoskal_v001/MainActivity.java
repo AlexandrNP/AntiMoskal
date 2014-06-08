@@ -9,12 +9,16 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 
+
+
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.TextView;
 import android.hardware.Camera;
@@ -22,7 +26,7 @@ import android.hardware.Camera;
 public class MainActivity extends Activity {
 	TextView tvResults;
 	TextView scanResults;
-	String results = "", BarCode;
+	String results = "", BarCode, mResults;
 	public static Camera cam = null;
 	
 	@Override
@@ -34,7 +38,7 @@ public class MainActivity extends Activity {
 		scanResults = (TextView) findViewById(R.id.Results); 
 		
 		//onClick search button
-        Button searchBtn = (Button) findViewById(R.id.searchBtn);
+        ImageButton searchBtn = (ImageButton) findViewById(R.id.searchBtn);
 		searchBtn.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -47,7 +51,7 @@ public class MainActivity extends Activity {
 		
 		
 		//onClick scan button
-		Button scanBtn = (Button) findViewById(R.id.scanBtn);
+		ImageButton scanBtn = (ImageButton) findViewById(R.id.scanBtn);
 		scanBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -57,7 +61,7 @@ public class MainActivity extends Activity {
 					
 					Intent intent = new Intent(
 							"com.google.zxing.client.android.SCAN");
-					//flashLightOn(v);
+			
 					intent.putExtra("SCAN_MODE", "QR_CODE_MODE,PRODUCT_MODE");
 					startActivityForResult(intent, 0);
 					
@@ -69,10 +73,23 @@ public class MainActivity extends Activity {
 
 				}
 
-			//	flashLightOff(v);
+			
 			}
 		});
 	}
+	
+    // Need handler for callbacks to the UI thread
+    final Handler mHandler = new Handler();
+
+    // Create runnable for posting
+    final Runnable mUpdateResults = new Runnable() {
+        public void run() {
+        	String res;
+        	res = StringParser.getResultValue(mResults, BarCode.length());
+        	tvResults.setText(res);
+        	//spinner.setVisibility(View.GONE);  
+        }
+    };
 		//saving results
 		public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 			if (requestCode == 0) {
@@ -83,7 +100,16 @@ public class MainActivity extends Activity {
 				 try{
 	                     
                          // CALL GetText method to make post method call
-					 new Thread(new GetResponce()).start();
+					 //new Thread(new GetResponce()).start();
+						Thread t = new Thread(){
+							public void run(){
+								try{
+								mResults = GetText();
+								mHandler.post(mUpdateResults);
+								}catch(Exception e) {}
+							}
+						}; t.start();
+					 
                  }
                 catch(Exception ex)
                  {
@@ -108,21 +134,6 @@ public class MainActivity extends Activity {
 
 
 	
-		class GetResponce implements Runnable {
-			public void run(){
-				
-				try{
-					
-					scanResults.setText(GetText());
-
-					
-				} catch (Exception ex){
-					ex.printStackTrace();
-				}
-
-				
-				
-			} 
 		
 		
 
@@ -140,7 +151,7 @@ public class MainActivity extends Activity {
 		          try
 		          { 
 		  		    
-		            URL url = new URL("http://antimoskal.jelastic.regruhosting.ru/pages/viewproduct");
+		            URL url = new URL("http://192.168.161.1/antimoskal/pages/viewproduct");
 		            URLConnection conn = url.openConnection(); 
 				  
 		            conn.setDoOutput(true); 
@@ -192,7 +203,7 @@ public class MainActivity extends Activity {
 		        	  }
 		          
 		      }
-		}
+		
 
 
 }

@@ -3,7 +3,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.antimoskal.SearchActivity"
+    android:background="@drawable/bgrnd"
+    tools:context="com.example.antimoskal.MainActivity"
     tools:ignore="MergeRootFrame" >
 
     <EditText
@@ -32,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/srchBtn"
-        android:layout_marginTop="59dp"
+        android:layout_marginTop="39dp"
         android:text="Results" />
 
     <ProgressBar
@@ -43,6 +44,11 @@
         android:layout_below="@+id/SearchField"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp" />
+    
+    
+
+   
 
 </RelativeLayout>
+    
 

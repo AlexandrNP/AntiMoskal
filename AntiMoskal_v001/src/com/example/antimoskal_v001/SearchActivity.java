@@ -35,19 +35,21 @@ import android.widget.ProgressBar;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import android.os.Handler;
 
 public class SearchActivity extends Activity {
 
 	EditText searchField;
 	TextView results;
 	Button sendBtn;
-	String BarCode, res="";
+	String BarCode, res="", mResults = "";
 	private ProgressBar spinner;
 	
 /*	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
 	StrictMode.setThreadPolicy(policy);*/
+	
+	StringParser sp;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,41 +60,40 @@ public class SearchActivity extends Activity {
 		searchField = (EditText) findViewById(R.id.SearchField);
 		results = (TextView) findViewById(R.id.Results);
 		sendBtn = (Button) findViewById(R.id.srchBtn);
+
 		
 		spinner.setVisibility(View.GONE);
 		sendBtn.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v)
             {
 				spinner.setVisibility(View.VISIBLE);    
-				new Thread(new GetResponce()).start();
+			//	new Thread(new GetResponce()).start();
+				Thread t = new Thread(){
+					public void run(){
+						try{
+						mResults = GetText();
+						mHandler.post(mUpdateResults);
+						}catch(Exception e) {}
+					}
+				}; t.start();
             }
 			
 		});
 	}
 	
-	class GetResponce implements Runnable {
-		public void run(){
-			
-			try{
-				
-				results.setText(GetText());
-	            runOnUiThread(new Runnable() {  
-	            @Override
-	            	public void run() {
-	                    // TODO Auto-generated method stub
+    // Need handler for callbacks to the UI thread
+    final Handler mHandler = new Handler();
 
-	                	spinner.setVisibility(View.GONE);
-	                }
-	            });
-				
-			} catch (Exception ex){
-				ex.printStackTrace();
-			}
-
+    // Create runnable for posting
+    final Runnable mUpdateResults = new Runnable() {
+        public void run() {
+        	String res;
+        	res = StringParser.getResultValue(mResults, BarCode.length());
+        	results.setText(res);
+        	spinner.setVisibility(View.GONE);  
+        }
+    };
 			
-			
-		} 
-	
 	
 
 	public  String  GetText()  throws  UnsupportedEncodingException
@@ -109,7 +110,7 @@ public class SearchActivity extends Activity {
 	          try
 	          { 
 	  		    
-	            URL url = new URL("http://antimoskal.jelastic.regruhosting.ru/pages/viewproduct");
+	            URL url = new URL("http://192.168.161.1/antimoskal/pages/viewproduct");
 	            URLConnection conn = url.openConnection(); 
 			  
 	            conn.setDoOutput(true); 
@@ -161,7 +162,7 @@ public class SearchActivity extends Activity {
 	        	  }
 	          
 	      }
-	}
+	
 }
 
 
